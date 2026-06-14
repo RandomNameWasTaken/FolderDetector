@@ -1,0 +1,14 @@
+﻿@using System.Linq
+@model FolderDetector.Models.FileErrorModel
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<h1>@Model.ErrorMessage</h1>
+
+
+<form asp-action="BackToMainPage" method="post">
+    <button type="submit">Back to main page</button>
+    @Html.AntiForgeryToken()
+</form>

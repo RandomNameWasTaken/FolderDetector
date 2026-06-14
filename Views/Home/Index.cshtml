@@ -1,0 +1,29 @@
+﻿@model IEnumerable<FolderDetector.Models.FolderModel>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to local folder detector</h1>
+
+    <form asp-action="GoToFolder" method="post">
+        <label for="folderpath">Enter folder path</label>
+        <input id="folderpath" name="folderpath" />
+        <button type="submit">Submit</button>
+        @Html.AntiForgeryToken()
+    </form>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <h4>Recently loaded folders</h4>
+    <ul>
+        @foreach (var item in Model)
+        {
+            <li>
+                <a asp-controller="Folder" asp-action="Index" asp-route-folderPath="@item.Path">@item.Path</a>
+            </li>
+        }
+    </ul>
+}

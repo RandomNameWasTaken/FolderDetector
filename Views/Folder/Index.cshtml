@@ -1,0 +1,79 @@
+@using System.Linq
+@model FolderDetector.Models.FolderModel
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<h1>@Model.Name</h1>
+
+@if (Model.ChangeDetected)
+{
+    <span style="color:darkred">File changes detected</span>
+}
+
+<h3>Current files in folder:</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Version</th>
+            <th>New file</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Files != null)
+        {
+            foreach (var item in Model.Files)
+            {
+                <tr>
+                    <td>@item.Value.Name</td>
+                    <td>@item.Value.Version</td>
+                    <td>
+                        @if (item.Value.IsNew)
+                        {
+                            <span>&#10004;</span>                     
+                        }
+                        else
+                        {
+                            <span>&#10006;</span>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@if (Model.DeletedFiles != null && Model.DeletedFiles.Any())
+{
+    <h3>Deleted files:</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Version</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.DeletedFiles)
+            {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Version</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<form asp-action="Analyse" method="post">
+    <input hidden value="@Model.Path" name="folderPath"></>
+    <button type="submit">Analyse folder</button>
+    @Html.AntiForgeryToken()
+</form>
+<hr/>
+<form asp-action="LoadAnotherFolder" method="post">
+    <button type="submit">Load Another Folder</button>
+    @Html.AntiForgeryToken()
+</form>
