@@ -6,8 +6,9 @@
         {
             Path = path;
             Name = new DirectoryInfo(path).Name;
-            LoadFiles();
+            Files = new Dictionary<string, FileModel>();
             DeletedFiles = new List<FileModel>();
+            Files = LoadFiles().ToDictionary(file => file.Name);
         }
 
         public string Path { get; set; }
@@ -18,17 +19,26 @@
 
         public IDictionary<string, FileModel> Files { get; set; }
 
-        public IEnumerable<FileModel> DeletedFiles { get; set; }
+        public List<FileModel> DeletedFiles { get; set; }
 
-        public void LoadFiles()
+        public  IEnumerable<FileModel> LoadFiles()
         {
-            Files = Directory.GetFiles(Path).Select(file => new FileModel(file)).ToDictionary(file => file.Name);
+            try
+            {
+                return Directory.GetFiles(Path).Select(file => new FileModel(file)).ToList();
+            }
+            catch
+            {
+                // If directory access fails, leave Files empty
+                return new List<FileModel>();
+            }
         }
 
         public void AnalyseFiles()
         {
             ChangeDetected = false;
             SetIsNewForOldFiles();
+
 
             foreach (var file in Files)
             {
@@ -37,14 +47,14 @@
                     ChangeDetected = file.Value.CreateHashCode() || ChangeDetected;
                 }
                 else
-                { 
-                    DeletedFiles = DeletedFiles.Append(file.Value);
+                {
+                    DeletedFiles.Add(file.Value);
                 }
             }
 
             RemoveDeletedFiles();
 
-            var currentFiles = Directory.GetFiles(Path).Select(file => new FileModel(file)).ToList();
+            var currentFiles = LoadFiles();
 
             foreach (var file in currentFiles)
             {
@@ -54,6 +64,7 @@
                 }
             }
         }
+        
 
         private void SetIsNewForOldFiles()
         {
@@ -65,6 +76,9 @@
 
         private void RemoveDeletedFiles()
         {
+            if (DeletedFiles == null || DeletedFiles.Count == 0)
+                return;
+
             foreach (var deletedFile in DeletedFiles)
             {
                 if (Files.ContainsKey(deletedFile.Name))

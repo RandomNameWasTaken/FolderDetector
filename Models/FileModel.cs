@@ -36,15 +36,15 @@
             var changeDetected = false;
             CouldBeAnalysed = true;
 
-            var newHasCode = fileContent.GetHashCode();
+            var newHashCode = fileContent.GetHashCode();
 
-            if (newHasCode != _hashCode)
+            if (newHashCode != _hashCode)
             {
                 Version++;
                 changeDetected = true;
             }
 
-            _hashCode = newHasCode;
+            _hashCode = newHashCode;
             return changeDetected;
         }
 

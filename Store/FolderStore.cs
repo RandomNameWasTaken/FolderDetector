@@ -6,7 +6,7 @@ namespace FolderDetector.Store
     public class FolderStore : IFolderStore
     {
         private readonly ConcurrentDictionary<string, FolderModel> _map = new();
-        public FolderModel Get(string key)
+        public FolderModel? Get(string key)
         {
             return _map.TryGetValue(key, out var folder) ? folder : null;
         }
@@ -23,7 +23,7 @@ namespace FolderDetector.Store
 
         public IEnumerable<FolderModel> GetAll()
         {
-            return _map.Values.ToList();
+            return _map.Values;
         }
     }
 }
